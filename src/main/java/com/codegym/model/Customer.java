@@ -22,6 +22,11 @@ public class Customer {
     public Customer() {
     }
 
+    public Customer(Long id, String firstName) {
+        this.id = id;
+        this.firstName = firstName;
+    }
+
     public Customer(Long id) {
         this.id = id;
     }

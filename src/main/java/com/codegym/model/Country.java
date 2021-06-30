@@ -1,7 +1,11 @@
 package com.codegym.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.Target;
+
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "countries")
@@ -11,6 +15,18 @@ public class Country {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long country_id;
     private String country_name;
+
+    @JsonIgnore
+    @OneToMany(targetEntity = Customer.class)
+    private List<Customer> customers;
+
+    public List<Customer> getCustomers() {
+        return customers;
+    }
+
+    public void setCustomers(List<Customer> customers) {
+        this.customers = customers;
+    }
 
     public Country() {
     }

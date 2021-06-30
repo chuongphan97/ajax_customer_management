@@ -10,161 +10,7 @@
   <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <!--  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>-->
-  <script type="text/javascript">
 
-    function addRow(customer) {
-      $('#customerList tbody').prepend('<tr id="row'+customer.id+'">' +
-              '<td>'+ customer.id +'</td>\n' +
-              '<td>'+ customer.firstName +'</td>' +
-              '<td>'+ customer.lastName +'</td>' +
-              '<td>'+ customer.email +'</td>' +
-              '<td>'+ customer.country.country_name +'</td>' +
-              '<td>'+ customer.address +'</td>' +
-              '<td><button class="editCustomer btn btn-primary text-light" data-toggle="modal" data-target="#exampleModal"\n' +
-              'value="' + customer.id + '">Edit</button></td>' +
-              '<td><button class="deleteCustomer btn btn-primary text-light" name="' + customer.id + '">Delete</button></td>' +
-              ' </tr>')
-    }
-
-    function addNewCustomer() {
-      let firstName = $('#firstName').val();
-      let lastName = $('#lastName').val();
-      let email = $('#email').val();
-      let address = $('#address').val();
-      let country_id = $('#country_id').val();
-
-      let newCountry = {
-        "country_id" : country_id
-      }
-
-      let newCustomer = {
-        "firstName": firstName,
-        "lastName": lastName,
-        "email": email,
-        "address": address,
-        "country": newCountry
-      };
-
-      $.ajax({
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        type: "POST",
-        data: JSON.stringify(newCustomer),
-        url: "/customers",
-        success: function (customer){
-          addRow(customer);
-
-          Swal.fire({
-            position: 'top-end',
-            icon: 'success',
-            title: 'Save customer successful!',
-            showConfirmButton: false,
-            timer: 1500
-          });
-          $('#add-customer')[0].reset();
-        }
-      });
-    }
-
-    $(document).ready(function (){
-      $('.deleteCustomer').on('click',function (){
-        Swal.fire({
-          title: 'Do you want to delete this customer?',
-          showCancelButton: true,
-          confirmButtonText: `Delete`,
-        }).then((result) => {
-          /* Read more about isConfirmed, isDenied below */
-            if (result.isConfirmed) {
-            let a = $(this);
-            let customerId = a.attr("name");
-            $.ajax({
-              type: "DELETE",
-              url: `/customers/${customerId}`,
-              success: function (customer){
-                console.log(`row${customerId}`);
-                $(`#row${customerId}`).remove();
-                Swal.fire('Deleted!', '', 'success')
-              }})
-          }
-          })
-        });
-
-      $('.editCustomer').click(function (){
-        let id = $(this).attr("value");
-        console.log(id);
-        let url = `/customers/edit/${id}`;
-        $.ajax({
-          type: "GET",
-          url: url,
-          success: function (customer){
-            $('#edit_id').val(customer.id);
-            $('#edit_firstName').val(customer.firstName);
-            $('#edit_lastName').val(customer.lastName);
-            $('#edit_country').val(customer.country.country_id);
-            $('#edit_email').val(customer.email);
-            $('#edit_address').val(customer.address);
-          }
-        })
-      });
-
-      $('#save_edit').click(function (){
-        let id = $('#edit_id').val();
-
-        let firstname = $('#edit_firstName').val();
-        let lastname = $('#edit_lastName').val();
-        let email = $('#edit_email').val();
-        let country_id = $('#edit_country').val();
-        let address = $('#edit_address').val();
-
-        let newCountry = {
-          country_id: country_id
-        }
-
-        let newCustomer = {
-          firstName: firstname,
-          lastName: lastname,
-          email: email,
-          address: address,
-          country: newCountry
-        }
-        $.ajax({
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          type: "PUT",
-          data: JSON.stringify(newCustomer),
-          url: `/customers/edit/${id}`,
-          success: function (){
-            $(`#row${id} td`).remove();
-            $(`#row${id}`).html(
-                    '<td>'+ id +'</td>\n' +
-                    '<td>'+ newCustomer.firstName +'</td>' +
-                    '<td>'+ newCustomer.lastName +'</td>' +
-                    '<td>'+ newCustomer.email +'</td>' +
-                    '<td>'+ newCustomer.country.country_name +'</td>' +
-                    '<td>'+ newCustomer.address +'</td>' +
-                    '<td><button class="editCustomer btn btn-primary text-light" data-toggle="modal" data-target="#exampleModal"\n' +
-                    'value="' + newCustomer.id + '">Edit</button></td>' +
-                    '<td><button class="deleteCustomer btn btn-primary text-light" name="' + newCustomer.id + '">Delete</button></td>');
-
-            $('#exampleModal').modal('hide');
-
-            Swal.fire({
-              position: 'top-end',
-              icon: 'success',
-              title: 'Save customer successful!',
-              showConfirmButton: false,
-              timer: 1500
-            });
-          }
-        })
-      })
-    })
-
-  </script>
 </head>
 <body>
 <div class="container">
@@ -274,7 +120,7 @@
               </div>
           </fieldset>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-secondary close-modal" data-dismiss="modal">Close</button>
             <button type="button" class="btn btn-primary" id="save_edit">Save changes</button>
           </div>
         </form>
@@ -283,5 +129,163 @@
   </div>
 </div>
 </div>
+
+<script type="text/javascript">
+
+  function addRow(customer) {
+    $('#customerList tbody').prepend('<tr id="row'+customer.id+'">' +
+            '<td>'+ customer.id +'</td>\n' +
+            '<td>'+ customer.firstName +'</td>' +
+            '<td>'+ customer.lastName +'</td>' +
+            '<td>'+ customer.email +'</td>' +
+            '<td>'+ customer.country.country_name +'</td>' +
+            '<td>'+ customer.address +'</td>' +
+            '<td><button class="editCustomer btn btn-primary text-light" data-toggle="modal" data-target="#exampleModal"\n' +
+            'value="' + customer.id + '">Edit</button></td>' +
+            '<td><button class="deleteCustomer btn btn-primary text-light" name="' + customer.id + '">Delete</button></td>' +
+            ' </tr>')
+  }
+
+  function addNewCustomer() {
+    let firstName = $('#firstName').val();
+    let lastName = $('#lastName').val();
+    let email = $('#email').val();
+    let address = $('#address').val();
+    let country_id = $('#country_id').val();
+
+    let newCountry = {
+      "country_id" : country_id
+    }
+
+    let newCustomer = {
+      "firstName": firstName,
+      "lastName": lastName,
+      "email": email,
+      "address": address,
+      "country": newCountry
+    };
+
+    $.ajax({
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      type: "POST",
+      data: JSON.stringify(newCustomer),
+      url: "/customers",
+      success: function (customer){
+        addRow(customer);
+
+        Swal.fire({
+          position: 'top-end',
+          icon: 'success',
+          title: 'Save customer successful!',
+          showConfirmButton: false,
+          timer: 1500
+        });
+        $('#add-customer')[0].reset();
+      }
+    });
+  }
+
+  $(document).ready(function (){
+    $('.deleteCustomer').on('click',function (){
+      Swal.fire({
+        title: 'Do you want to delete this customer?',
+        showCancelButton: true,
+        confirmButtonText: `Delete`,
+      }).then((result) => {
+        /* Read more about isConfirmed, isDenied below */
+        if (result.isConfirmed) {
+          let a = $(this);
+          let customerId = a.attr("name");
+          $.ajax({
+            type: "DELETE",
+            url: `/customers/${customerId}`,
+            success: function (customer){
+              console.log(`row${customerId}`);
+              $(`#row${customerId}`).remove();
+              Swal.fire('Deleted!', '', 'success')
+            }})
+        }
+      })
+    });
+
+    $('.editCustomer').click(function (){
+      let id = $(this).attr("value");
+      let url = `/customers/edit/${id}`;
+      $.ajax({
+        type: "GET",
+        url: url,
+        success: function (customer){
+
+          $('#edit_id').val(customer.id);
+          $('#edit_firstName').val(customer.firstName);
+          $('#edit_lastName').val(customer.lastName);
+          $('#edit_country').val(customer.country.country_id);
+          $('#edit_email').val(customer.email);
+          $('#edit_address').val(customer.address);
+        }
+      })
+    });
+
+    $('#save_edit').click(function (){
+      let id = $('#edit_id').val();
+
+      let firstname = $('#edit_firstName').val();
+      let lastname = $('#edit_lastName').val();
+      let email = $('#edit_email').val();
+      let country_id = $('#edit_country').val();
+      let address = $('#edit_address').val();
+
+      let newCountry = {
+        country_id: country_id
+      }
+
+      let newCustomer = {
+        firstName: firstname,
+        lastName: lastname,
+        email: email,
+        address: address,
+        country: newCountry
+      }
+      $.ajax({
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        type: "PUT",
+        data: JSON.stringify(newCustomer),
+        url: `/customers/edit/${id}`,
+        success: function (){
+          $(`#row${id} td`).remove();
+          $(`#row${id}`).html(
+                  '<td>'+ id +'</td>\n' +
+                  '<td>'+ newCustomer.firstName +'</td>' +
+                  '<td>'+ newCustomer.lastName +'</td>' +
+                  '<td>'+ newCustomer.email +'</td>' +
+                  '<td>'+ newCustomer.country.country_name +'</td>' +
+                  '<td>'+ newCustomer.address +'</td>' +
+                  '<td><button class="editCustomer btn btn-primary text-light" data-toggle="modal" data-target="#exampleModal"\n' +
+                  'value="' + newCustomer.id + '">Edit</button></td>' +
+                  '<td><button class="deleteCustomer btn btn-primary text-light" name="' + newCustomer.id + '">Delete</button></td>');
+          Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: 'Save customer successful!',
+            showConfirmButton: false,
+            timer: 1500
+          });
+          // $('#exampleModal').modal('hide');
+
+          $(".close-modal").click();
+
+
+        }
+      })
+    })
+  })
+
+</script>
 </body>
 </html>

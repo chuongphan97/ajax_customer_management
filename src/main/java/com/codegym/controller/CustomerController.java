@@ -58,6 +58,12 @@ public class CustomerController {
         return new ResponseEntity<>(customerOptional.get(), HttpStatus.NO_CONTENT);
     }
 
+    @DeleteMapping("/delete")
+    public ResponseEntity<Customer> deleteCustomerJson(@RequestBody Customer customer) {
+        customerService.remove(customer.getId());
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
     @PutMapping("edit/{id}")
     public ResponseEntity<Customer> updateCustomer(@PathVariable Long id, @RequestBody Customer customer) {
         Optional<Customer> customerOptional = customerService.findById(id);
